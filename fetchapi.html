@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>fetchApi</title>
+</head>
+<style>
+    img{
+        width: 50px;
+        align-items: flex-end;
+    }
+
+    #newimg{
+        width: 400px;
+        font-size: 22px;
+    }
+</style>
+<body>
+    <h1>Product details</h1>
+   <table class="table table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Images</th>
+        </tr>
+        
+    </thead>
+    <tbody id="tbody">
+
+    </tbody>
+   </table>
+    
+</body>
+<script>
+
+async function newApi() {
+    try {
+        const res = await fetch('https://dummyjson.com/products');
+        const data = await res.json();
+        const products = data.products;
+        let rows = '';
+        products.forEach((product, index) => {
+            rows += `<tr>                        
+                        <td>${product.id}</td>
+                        <td>${product.title}<button id="btnDisplay" onclick="seemore(${index + 1})"> see more </button></td>
+                        <td>${product.description}</td>
+                        <td>${product.category}</td>
+                        <td>${product.price}</td>
+                        <td><img src="${product.images[0]}" alt="${product.title}" width="50"></td>
+                     </tr>`;
+        });
+        document.getElementById('tbody').innerHTML = rows;
+    } catch (error) {
+        console.error('Error fetching the data:', error);
+    }
+}
+
+i = 0
+async function seemore(i) {
+    try {
+        const res = await fetch(`https://dummyjson.com/products/${i}`);
+        const data = await res.json();
+        console.log(data);
+        document.body.innerHTML = `
+            <button onclick="location.reload()">Back</button>
+            <button id='prev' onclick='previous(${i})'>Previous</button>
+            <button id='next' onclick='next(${i})'>Next</button>
+            
+            <h2>${data.title}</h2>
+            <p>Rating: ${data.rating}</p>
+            <p>Brand: ${data.brand}</p>
+            <p>Availability: ${data.availabilityStatus}</p>
+            <p>Description: ${data.description}</p>
+            <img id="newimg" width="300" height="400" src="${data.images[0]}" />
+        `;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+
+
+
+async function previous(i){
+    if(i > 1){
+        i --
+    }else{
+        i = 30;       
+    }
+    await seemore(i)
+}
+
+
+async function next(i){
+    if(i < 30){
+        i++
+    }else{
+        i = 1
+    }
+    await seemore(i)
+}
+
+newApi();
+
+     
+    
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</html>
